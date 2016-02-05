@@ -12,9 +12,22 @@ function easyddb_search_result_reservation_install() {
   $instance['display']['search_result'] = array(
     'label' => 'hidden',
     'type' => 'ding_entity_buttons_ajax',
-    'weight' => '99',
+    'weight' => '20',
     'settings' => array(),
     'module' => 'ding_entity'
   );
   field_update_instance($instance);
+
+  // Add action buttons to the content group.
+  $groups = field_group_read_groups(
+    array(
+      'entity_type' => 'ting_object',
+      'bundle' => 'ting_object',
+      'view_mode' => 'search_result'
+    )
+  );
+
+  $group_content = $groups['ting_object']['ting_object']['search_result']['group_ting_right_col_search'];
+  $group_content->children[] = 'ding_entity_buttons';
+  field_group_group_save($group_content);
 }
