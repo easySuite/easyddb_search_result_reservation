@@ -29,9 +29,11 @@ function easyddb_search_result_reservation_install() {
   );
 
   $group = $groups['ting_object']['ting_object']['search_result']['group_ting_right_col_search'];
-  if (!in_array('ding_entity_buttons', $group->children)) {
-    $group->children[] = 'ding_entity_buttons';
-    field_group_group_save($group);
+  if (!empty($group) && !empty($group->children) && is_array($group->children)) {
+    if (!in_array('ding_entity_buttons', $group->children)) {
+      $group->children[] = 'ding_entity_buttons';
+      field_group_group_save($group);
+    }
   }
 }
 
@@ -49,8 +51,10 @@ function easyddb_search_result_reservation_uninstall() {
   );
 
   $group = $groups['ting_object']['ting_object']['search_result']['group_ting_right_col_search'];
-  if (($key = array_search('ding_entity_buttons',  $group->children)) !== FALSE) {
-    unset( $group->children[$key]);
-    field_group_group_save($group);
+  if (!empty($group) && !empty($group->children) && is_array($group->children)) {
+    if (($key = array_search('ding_entity_buttons', $group->children)) !== FALSE) {
+      unset($group->children[$key]);
+      field_group_group_save($group);
+    }
   }
 }
