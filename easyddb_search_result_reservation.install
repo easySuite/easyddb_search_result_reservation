@@ -23,11 +23,34 @@ function easyddb_search_result_reservation_install() {
     array(
       'entity_type' => 'ting_object',
       'bundle' => 'ting_object',
-      'view_mode' => 'search_result'
+      'view_mode' => 'search_result',
+      'group_name' => 'group_ting_right_col_search',
     )
   );
 
-  $group_content = $groups['ting_object']['ting_object']['search_result']['group_ting_right_col_search'];
-  $group_content->children[] = 'ding_entity_buttons';
-  field_group_group_save($group_content);
+  $group = $groups['ting_object']['ting_object']['search_result']['group_ting_right_col_search'];
+  if (!in_array('ding_entity_buttons', $group->children)) {
+    $group->children[] = 'ding_entity_buttons';
+    field_group_group_save($group);
+  }
+}
+
+/**
+ * Implements hook_uninstall().
+ */
+function easyddb_search_result_reservation_uninstall() {
+  $groups = field_group_read_groups(
+    array(
+      'entity_type' => 'ting_object',
+      'bundle' => 'ting_object',
+      'view_mode' => 'search_result',
+      'group_name' => 'group_ting_right_col_search',
+    )
+  );
+
+  $group = $groups['ting_object']['ting_object']['search_result']['group_ting_right_col_search'];
+  if (($key = array_search('ding_entity_buttons',  $group->children)) !== FALSE) {
+    unset( $group->children[$key]);
+    field_group_group_save($group);
+  }
 }
