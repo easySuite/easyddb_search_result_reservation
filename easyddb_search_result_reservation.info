@@ -2,4 +2,4 @@ name = easyDDB Search Result Reservation Button
 description = Force reservation button display on search result
 core = 7.x
 version = 7.x-2.4.4+easy
-package = easyDDB
+package = easyOPAC
