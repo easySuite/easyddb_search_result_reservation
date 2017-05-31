@@ -3,3 +3,42 @@
  * @file
  * Reservation button search result placement.
  */
+
+/**
+ * Add "Action buttons" field.
+ */
+function _easyddb_search_result_reservation_field_create() {
+  $instance = field_info_instance('ting_object', 'ding_entity_buttons', 'ting_object');
+  $instance['display']['search_result'] = array(
+    'label' => 'hidden',
+    'type' => 'ding_entity_buttons_ajax',
+    'weight' => '20',
+    'settings' => array(),
+    'module' => 'ding_entity',
+  );
+  field_update_instance($instance);
+
+  // Dirty hack. There is a situation when we don't have any groups in database.
+  $load_group = field_group_load_field_group('group_ting_right_col_search', 'ting_object', 'ting_object', 'search_result');
+  field_group_group_save($load_group);
+
+  // Add action buttons to the content group.
+  $groups = field_group_read_groups(
+    array(
+      'entity_type' => 'ting_object',
+      'bundle' => 'ting_object',
+      'view_mode' => 'search_result',
+      'group_name' => 'group_ting_right_col_search',
+    )
+  );
+
+  if (!empty($groups)) {
+    $group = $groups['ting_object']['ting_object']['search_result']['group_ting_right_col_search'];
+    if (!empty($group) && !empty($group->children) && is_array($group->children)) {
+      if (!in_array('ding_entity_buttons', $group->children)) {
+        $group->children[] = 'ding_entity_buttons';
+        field_group_group_save($group);
+      }
+    }
+  }
+}
