@@ -42,3 +42,12 @@ function _easyddb_search_result_reservation_field_create() {
     }
   }
 }
+
+/**
+ * Implements hook_process_ting_object().
+ */
+function easyddb_search_result_reservation_process_ting_object(&$variables) {
+  if ($variables['elements']['#entity_type'] == 'ting_collection') {
+    $variables['content']['ting_collection_types'][0]['#attached']['css'][] = drupal_get_path('module', 'easyddb_search_result_reservation') . '/css/easyddb_search_result.css';
+  }
+}

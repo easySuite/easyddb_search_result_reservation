@@ -1,4 +1,4 @@
-easyDDB Search Result Reservation Button
+easyOPAC Search Result Reservation Button
 ==========
 
 Add reservation button on search results items.

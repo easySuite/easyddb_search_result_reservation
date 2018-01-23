@@ -31,6 +31,10 @@ function easyddb_search_result_reservation_uninstall() {
       field_group_group_save($group);
     }
   }
+
+  $instance_info = field_info_instance('ting_object', 'ding_entity_buttons', 'ting_object');
+  $instance_info['display']['search_result']['type'] = 'hidden';
+  field_update_instance($instance_info);
 }
 
 /**
