@@ -8,7 +8,9 @@
  * Implements hook_install().
  */
 function easyddb_search_result_reservation_install() {
+  _easyddb_search_result_reservation_resave_groups();
   _easyddb_search_result_reservation_field_create();
+  _easyddb_search_result_reservation_update_entity_buttons();
 }
 
 /**
@@ -42,4 +44,68 @@ function easyddb_search_result_reservation_uninstall() {
  */
 function easyddb_search_result_reservation_update_7001() {
   _easyddb_search_result_reservation_field_create();
+}
+
+/**
+ * Move entity buttons after group info.
+ */
+function easyddb_search_result_reservation_update_7002() {
+  _easyddb_search_result_reservation_resave_groups();
+  _easyddb_search_result_reservation_update_entity_buttons();
+}
+
+/**
+ * Move entity buttons after group info.
+ */
+function _easyddb_search_result_reservation_update_entity_buttons() {
+  // Move action buttons to the bottom.
+  $groups = field_group_read_groups(
+    array(
+      'entity_type' => 'ting_object',
+      'bundle' => 'ting_object',
+      'view_mode' => 'search_result',
+    )
+  );
+  $group = $group_content = $groups['ting_object']['ting_object']['search_result'];
+  $group_info_weight = $group['group_info']->weight;
+  $data = db_query('SELECT data FROM {field_config_instance} WHERE field_name = :field_name AND bundle = :bundle', array(':field_name' => 'ding_entity_buttons', ':bundle' => 'ting_object'))->fetchField();
+  $data = unserialize($data);
+  $data['display']['search_result']['weight'] = $group_info_weight + 1;
+
+  db_update('field_config_instance')
+    ->fields(array('data' => serialize($data)))
+    ->condition('field_name', 'ding_entity_buttons')
+    ->condition('bundle', 'ting_object')
+    ->execute();
+
+  // Clear ting_object cache.
+  field_cache_clear();
+}
+
+/**
+ * Load all fieldgroups from database and resave them into field_group table.
+ */
+function _easyddb_search_result_reservation_resave_groups() {
+  $existing_fgs = db_select('field_group', 'fg')
+    ->fields('fg', array('identifier'))
+    ->execute()
+    ->fetchAllAssoc('identifier');
+
+  $field_groups = array();
+  foreach ($existing_fgs as $existing_fg) {
+    $field_groups[] = $existing_fg->identifier;
+  }
+
+  $fginfo = field_group_info_groups();
+  foreach ($fginfo as $bundle => $group_info) {
+    foreach ($group_info as $item) {
+      foreach ($item as $display) {
+        foreach ($display as $group) {
+          if (!in_array($group->identifier, $field_groups)) {
+            field_group_group_save($group);
+          }
+        }
+      }
+    }
+  }
 }
