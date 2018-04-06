@@ -55,10 +55,17 @@ function easyddb_search_result_reservation_update_7002() {
 }
 
 /**
- * Move entity buttons after group info.
+ * Move entity buttons at the end of the group right.
+ */
+function easyddb_search_result_reservation_update_7003() {
+  _easyddb_search_result_reservation_update_entity_buttons();
+  _easyddb_search_result_reservation_resave_groups();
+}
+
+/**
+ * Move entity buttons at the end of the group right.
  */
 function _easyddb_search_result_reservation_update_entity_buttons() {
-  // Move action buttons to the bottom.
   $groups = field_group_read_groups(
     array(
       'entity_type' => 'ting_object',
@@ -66,20 +73,30 @@ function _easyddb_search_result_reservation_update_entity_buttons() {
       'view_mode' => 'search_result',
     )
   );
-  $group = $group_content = $groups['ting_object']['ting_object']['search_result'];
-  $group_info_weight = $group['group_info']->weight;
-  $data = db_query('SELECT data FROM {field_config_instance} WHERE field_name = :field_name AND bundle = :bundle', array(':field_name' => 'ding_entity_buttons', ':bundle' => 'ting_object'))->fetchField();
-  $data = unserialize($data);
-  $data['display']['search_result']['weight'] = $group_info_weight + 1;
+  if (!empty($groups)) {
+    $group = $groups['ting_object']['ting_object']['search_result']['group_ting_right_col_search'];
+    if (!empty($group) && !empty($group->children) && is_array($group->children)) {
+      if (!in_array('ding_entity_buttons', $group->children)) {
+        $group->children[] = 'ding_entity_buttons';
+        field_group_group_save($group);
+      }
+    }
 
-  db_update('field_config_instance')
-    ->fields(array('data' => serialize($data)))
-    ->condition('field_name', 'ding_entity_buttons')
-    ->condition('bundle', 'ting_object')
-    ->execute();
+    $group = $group_content = $groups['ting_object']['ting_object']['search_result'];
+    $group_info_weight = $group['group_info']->weight;
+    $data = db_query('SELECT data FROM {field_config_instance} WHERE field_name = :field_name AND bundle = :bundle', array(':field_name' => 'ding_entity_buttons', ':bundle' => 'ting_object'))->fetchField();
+    $data = unserialize($data);
+    $data['display']['search_result']['weight'] = $group_info_weight + 1;
 
-  // Clear ting_object cache.
-  field_cache_clear();
+    db_update('field_config_instance')
+      ->fields(array('data' => serialize($data)))
+      ->condition('field_name', 'ding_entity_buttons')
+      ->condition('bundle', 'ting_object')
+      ->execute();
+
+    // Clear ting_object cache.
+    field_cache_clear();
+  }
 }
 
 /**

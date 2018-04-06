@@ -12,7 +12,6 @@ function _easyddb_search_result_reservation_field_create() {
   $instance['display']['search_result'] = array(
     'label' => 'hidden',
     'type' => 'ding_entity_buttons_ajax',
-    'weight' => '20',
     'settings' => array(),
     'module' => 'ding_entity',
   );
