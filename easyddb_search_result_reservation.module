@@ -50,3 +50,16 @@ function easyddb_search_result_reservation_process_ting_object(&$variables) {
     $variables['content']['ting_collection_types'][0]['#attached']['css'][] = drupal_get_path('module', 'easyddb_search_result_reservation') . '/css/easyddb_search_result.css';
   }
 }
+
+/**
+ * Implements hook_entity_view().
+ */
+function easyddb_search_result_reservation_entity_view($entity, $type, $view_mode, $langcode) {
+  if (module_exists('ding_collection_reservation') && variable_get('ting_reservable_collections', FALSE)) {
+    return;
+  }
+
+  if ('ting_collection' === $type && 'teaser' === $view_mode && count($entity->entities) > 1) {
+    unset($entity->content['ting_primary_object'][0]['ding_entity_buttons']);
+  }
+}
