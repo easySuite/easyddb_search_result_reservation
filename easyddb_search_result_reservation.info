@@ -1,5 +1,5 @@
 name = easyOPAC Search Result Reservation Button
 description = Force reservation button display on search result
 core = 7.x
-version = 7.x-4.2.1
+version = 7.x-4.4.2
 package = easyOPAC
